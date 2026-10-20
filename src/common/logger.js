@@ -1,5 +1,6 @@
 import pino from 'pino';
 import config from 'config';
+import { report } from './error-tracking.js';
 const LOG_CONFIG = config.get('log') || {};
 const {
   level: DEFAULT_LEVEL,
@@ -67,7 +68,9 @@ const _newLogger = ({
   const hooks = {
     // Reverse the order of arguments for the log method - message comes first,
     // then the rest of the arguments (object params, errors, ...)
-    logMethod (inputArgs, method) {
+    // Each record also goes to error reporting (src/common/error-tracking.js)
+    logMethod (inputArgs, method, level) {
+      report(this.levels.labels[level], inputArgs.slice(), this.bindings().mod);
       if (inputArgs.length >= 2) {
         const arg1 = inputArgs.shift()
         const arg2 = inputArgs.shift()

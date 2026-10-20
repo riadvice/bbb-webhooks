@@ -146,3 +146,12 @@ modules:
           userPrefix: bigbluebutton:webhooks:xapi:user
           polls: bigbluebutton:webhooks:xapi:polls
           pollPrefix: bigbluebutton:webhooks:xapi:poll
+
+# Sentry error reporting, off while dsn is empty; BBB_SENTRY_* variables win.
+sentry:
+  dsn: ""
+  level: error
+  breadcrumbLevel: info
+  anonymise: mask
+  environment: production
+  sampleRate: 1.0

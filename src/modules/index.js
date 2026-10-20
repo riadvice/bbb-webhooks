@@ -2,6 +2,7 @@
 
 import config from 'config';
 import { newLogger } from '../common/logger.js';
+import { flush as flushErrorTracking } from '../common/error-tracking.js';
 import ModuleWrapper from './module-wrapper.js';
 import Context from './context.js';
 import {
@@ -147,11 +148,13 @@ export default class ModuleManager {
 
     process.on('SIGTERM', async () => {
       await this.stopModules();
+      await flushErrorTracking();
       process.exit(0);
     });
 
     process.on('SIGINT', async () => {
       await this.stopModules();
+      await flushErrorTracking();
       process.exit(0);
     });
 
@@ -160,6 +163,7 @@ export default class ModuleManager {
 
       if (process.env.NODE_ENV !== 'production') {
         await this.stopModules();
+        await flushErrorTracking();
         process.exit(1);
       }
     });
@@ -173,6 +177,7 @@ export default class ModuleManager {
 
       if (process.env.NODE_ENV !== 'production') {
         await this.stopModules();
+        await flushErrorTracking();
         process.exit(1);
       }
     });

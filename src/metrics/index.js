@@ -8,6 +8,7 @@ import {
   register,
 } from 'prom-client';
 import { newLogger } from '../common/logger.js';
+import { otlpMetricsEnabled } from '../common/telemetry.js';
 
 const logger = newLogger('prometheus');
 
@@ -106,6 +107,9 @@ AGENT = new PrometheusAgent(METRICS_HOST, METRICS_PORT, {
 
 if (METRICS_ENABLED && injectMetrics(buildDefaultMetrics())) {
   AGENT.start();
+} else if (otlpMetricsEnabled && injectMetrics(buildDefaultMetrics())) {
+  // Values are only pushed over OTLP, without the scrape endpoint.
+  AGENT.started = true;
 }
 
 /**

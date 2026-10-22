@@ -1,5 +1,6 @@
 import { createClient } from 'redis';
 import Utils from '../../common/utils.js';
+import { startMessageSpan } from '../../common/telemetry.js';
 
 /*
  * [MODULE_TYPES.in]: {
@@ -58,7 +59,12 @@ export default class InRedis {
 
       if (Utils.isEmpty(event)) return;
 
-      this._collector(event);
+      const span = startMessageSpan(channel, event);
+      try {
+        this._collector(event);
+      } finally {
+        span?.end();
+      }
     } catch (error) {
       this.logger.error(`Error processing message on [${channel}]: ${error}`);
     }
